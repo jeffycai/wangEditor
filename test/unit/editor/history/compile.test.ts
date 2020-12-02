@@ -49,4 +49,24 @@ describe('Editor history compile', () => {
 
         editor.txt.html('<span>123</span>')
     })
+
+    test('如果在firefox中，如果有删除节点的mutaion，需要一些特殊处理', done => {
+        expect.assertions(2)
+
+        const observer = new MutationObserver((mutationList: MutationRecord[]) => {
+            const compileData = compile(mutationList)
+            expect(compileData instanceof Array).toBeTruthy()
+            expect(compileData.length).toBe(4)
+            done()
+        })
+
+        const $textEl = editor.$textElem.elems[0]
+        observer.observe($textEl, { attributes: true, childList: true, subtree: true })
+
+        // 添加多的dom变化情况，可以使得compile statement 执行到达率高
+        editor.txt.html('<span id="test">123<i>456</i></span>')
+        editor.txt.html('<h1>标题</h1><span id="test">123<i>456</i></span>')
+        editor.txt.html('<span>123</span>')
+        editor.txt.html('<span></span>')
+    })
 })
