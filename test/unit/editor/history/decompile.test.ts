@@ -1,3 +1,8 @@
+/**
+ * @description history decompile
+ * @author luochao
+ */
+
 import createEditor from '../../../helpers/create-editor'
 import Editor from '../../../../src/editor'
 import compile from '../../../../src/editor/history/data/node/compile'
