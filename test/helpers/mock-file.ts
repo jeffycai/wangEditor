@@ -1,6 +1,6 @@
 export default function mockFile(option: any) {
-    const name = option.name || 'mock.txt'
-    const size = option.size || 1024
+    const name = option.name ?? 'mock.txt'
+    const size = option.size ?? 1024
     const mimeType = option.mimeType || 'plain/txt'
 
     function range(count: number) {
