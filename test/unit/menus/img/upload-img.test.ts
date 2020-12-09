@@ -2,12 +2,12 @@
  * @description upload-img test
  * @author luochao
  */
-import createEditor from '../../helpers/create-editor'
-import mockCmdFn from '../../helpers/command-mock'
-import mockFile from '../../helpers/mock-file'
-import mockXHR from '../../helpers/mock-xhr'
-import Editor from '../../../src/editor'
-import UploadImg from '../../../src/menus/img/upload-img'
+import createEditor from '../../../helpers/create-editor'
+import mockCmdFn from '../../../helpers/command-mock'
+import mockFile from '../../../helpers/mock-file'
+import mockXHR from '../../../helpers/mock-xhr'
+import Editor from '../../../../src/editor'
+import UploadImg from '../../../../src/menus/img/upload-img'
 
 let editor: Editor
 let id = 1
