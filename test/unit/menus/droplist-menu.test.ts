@@ -8,14 +8,19 @@ import DropList from '../../../src/menus/menu-constructors/DropList'
 import createEditor from '../../helpers/create-editor'
 import $ from '../../../src/utils/dom-core'
 
+let editor: ReturnType<typeof createEditor>
+let droplistMenu: DropListMenu
+let id = 1
+let menuEl: ReturnType<typeof $>
+
 describe('dropList menu', () => {
-    test('初始化基本的下拉菜单', () => {
-        const editor = createEditor(document, 'div1', '', {
+    beforeEach(() => {
+        editor = createEditor(document, `div${id++}`, '', {
             lang: 'en',
         })
 
         const mockClickFn = jest.fn((value: string) => value)
-        const menuEl = $('<div id="menu1"></div>')
+        menuEl = $(`<div id="menu${id++}"></div>`)
         const conf = {
             title: '设置标题',
             type: 'list',
@@ -24,36 +29,20 @@ describe('dropList menu', () => {
             list: [
                 {
                     value: 'test123',
-                    $elem: $('<span>test123</span>'),
+                    $elem: $('<span><i>test123</i></span>'),
                 },
             ],
         }
 
-        const droplistMenu = new DropListMenu(menuEl, editor, conf)
+        droplistMenu = new DropListMenu(menuEl, editor, conf)
+    })
+
+    test('初始化基本的下拉菜单', () => {
         expect(droplistMenu.dropList instanceof DropList).toBeTruthy()
     })
 
-    test('初始化基本的下拉菜单，模拟菜单点击会展开下来菜单', () => {
-        const editor = createEditor(document, 'div1', '', {
-            lang: 'en',
-        })
-
-        const mockClickFn = jest.fn((value: string) => value)
-        const menuEl = $('<div id="menu1"></div>')
-        const conf = {
-            title: '设置标题',
-            type: 'list',
-            width: 100,
-            clickHandler: mockClickFn,
-            list: [
-                {
-                    value: 'test123',
-                    $elem: $('<span>test123</span>'),
-                },
-            ],
-        }
-
-        new DropListMenu(menuEl, editor, conf)
+    test('初始化基本的下拉菜单，模拟菜单mouseenter事件会展开下来菜单', done => {
+        expect.assertions(2)
 
         const event = new MouseEvent('mouseenter', {
             view: window,
@@ -62,5 +51,56 @@ describe('dropList menu', () => {
         })
 
         menuEl.elems[0].dispatchEvent(event)
+
+        setTimeout(() => {
+            expect(droplistMenu.dropList.isShow).toBeTruthy()
+            expect(menuEl.elems[0]).toHaveStyle(`z-index:${editor.zIndex.get('menu')}`)
+            done()
+        }, 300)
+    })
+
+    test('初始化基本的下拉菜单，模拟菜单mouseleave事件会隐藏菜单', done => {
+        expect.assertions(3)
+
+        const enterEvent = new MouseEvent('mouseenter', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        })
+
+        const leaveEvent = new MouseEvent('mouseleave', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        })
+
+        menuEl.elems[0].dispatchEvent(enterEvent)
+
+        setTimeout(() => {
+            expect(droplistMenu.dropList.isShow).toBeTruthy()
+
+            menuEl.elems[0].dispatchEvent(leaveEvent)
+
+            setTimeout(() => {
+                expect(droplistMenu.dropList.isShow).toBeFalsy()
+                expect(menuEl.elems[0]).toHaveStyle(`z-index:auto`)
+                done()
+            }, 20)
+        }, 300)
+    })
+
+    test('初始化基本的下拉菜单，模拟菜单mouseenter事件如果编辑器当前的range为空，则直接返回', () => {
+        const mockGetRage = jest.spyOn(editor.selection, 'getRange')
+        mockGetRage.mockImplementation(() => null)
+
+        const enterEvent = new MouseEvent('mouseenter', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+        })
+
+        menuEl.elems[0].dispatchEvent(enterEvent)
+
+        expect(droplistMenu.dropList.isShow).toBeFalsy()
     })
 })
