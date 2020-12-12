@@ -7,6 +7,7 @@ import DropListMenu from '../../../src/menus/menu-constructors/DropListMenu'
 import DropList from '../../../src/menus/menu-constructors/DropList'
 import createEditor from '../../helpers/create-editor'
 import $ from '../../../src/utils/dom-core'
+import dispatchEvent from '../../helpers/mock-dispatch-event'
 
 let editor: ReturnType<typeof createEditor>
 let droplistMenu: DropListMenu
@@ -44,13 +45,7 @@ describe('dropList menu', () => {
     test('初始化基本的下拉菜单，模拟菜单mouseenter事件会展开下来菜单', done => {
         expect.assertions(2)
 
-        const event = new MouseEvent('mouseenter', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-        })
-
-        menuEl.elems[0].dispatchEvent(event)
+        dispatchEvent(menuEl, 'mouseenter', 'MouseEvent')
 
         setTimeout(() => {
             expect(droplistMenu.dropList.isShow).toBeTruthy()
@@ -62,24 +57,12 @@ describe('dropList menu', () => {
     test('初始化基本的下拉菜单，模拟菜单mouseleave事件会隐藏菜单', done => {
         expect.assertions(3)
 
-        const enterEvent = new MouseEvent('mouseenter', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-        })
-
-        const leaveEvent = new MouseEvent('mouseleave', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-        })
-
-        menuEl.elems[0].dispatchEvent(enterEvent)
+        dispatchEvent(menuEl, 'mouseenter', 'MouseEvent')
 
         setTimeout(() => {
             expect(droplistMenu.dropList.isShow).toBeTruthy()
 
-            menuEl.elems[0].dispatchEvent(leaveEvent)
+            dispatchEvent(menuEl, 'mouseleave', 'MouseEvent')
 
             setTimeout(() => {
                 expect(droplistMenu.dropList.isShow).toBeFalsy()
@@ -93,13 +76,7 @@ describe('dropList menu', () => {
         const mockGetRage = jest.spyOn(editor.selection, 'getRange')
         mockGetRage.mockImplementation(() => null)
 
-        const enterEvent = new MouseEvent('mouseenter', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-        })
-
-        menuEl.elems[0].dispatchEvent(enterEvent)
+        dispatchEvent(menuEl, 'mouseenter', 'MouseEvent')
 
         expect(droplistMenu.dropList.isShow).toBeFalsy()
     })
